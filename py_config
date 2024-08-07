@@ -1,0 +1,27 @@
+
+import os
+from src.config import read_properties_file, load_xml_files
+def test_read_properties_file():
+    # Create a sample properties file
+    file_path = "C:\\Users\\G88729\\Desktop\\sampletdd\\src\\tests\\test_data\\application.properties"
+    properties = read_properties_file(file_path)
+    assert properties['datasource.retry.retries'] == "${jCBC_datasource_retry_retries}"
+   # validation.nbjca.se.messageId=${jCBC_SE_Validation_MessageId}
+    assert properties['validation.nbjca.se.messageId'] != "${jCBC_datasource_retry_retries}"
+    
+def test_load_xml_files():
+    dir='C:\\Users\\G88729\\Desktop\\sampletdd\\src\\tests\\test_data'
+    xml_files = load_xml_files(dir)
+    allfiles=xml_files.keys()
+    existingfiles =['cbc-osb-common.xml', 'cbc-osb-dev01.xml','cbc-osb-common.xml']
+    for i in existingfiles:
+        individualfiles=i
+        if individualfiles in allfiles:
+            results=True
+        else:
+            results=False
+    assert results==True
+  
+
+
+  
