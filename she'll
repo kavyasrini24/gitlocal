@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Grafana Server URL (Change this to your Grafana URL)
+GRAFANA_URL="http://localhost:3000"
+
+# Grafana API Key (Replace with your actual API key)
+API_KEY="your_grafana_api_key"
+
+# Function to check Grafana connectivity
+check_grafana() {
+    echo "🔍 Checking Grafana connection..."
+    response=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $API_KEY" "$GRAFANA_URL/api/health")
+
+    if [ "$response" -eq 200 ]; then
+        echo "✅ Grafana is running!"
+    else
+        echo "❌ Failed to connect to Grafana (HTTP $response)"
+        exit 1
+    fi
+}
+
+# Function to fetch dashboards
+get_dashboards() {
+    echo "📡 Fetching Grafana dashboards..."
+    response=$(curl -s -H "Authorization: Bearer $API_KEY" "$GRAFANA_URL/api/search")
+
+    if [ -z "$response" ]; then
+        echo "❌ No dashboards found or API request failed!"
+    else
+        echo "✅ Dashboards retrieved:"
+        echo "$response" | jq '.[] | "\(.title) (UID: \(.uid))"'
+    fi
+}
+
+# Check if jq is installed (for JSON formatting)
+if ! command -v jq &> /dev/null; then
+    echo "⚠️ 'jq' is required for JSON parsing. Install it using: sudo apt install jq"
+    exit 1
+fi
+
+# Run functions
+check_grafana
+get_dashboards
